@@ -2,6 +2,9 @@ import React from 'react'
 
 const PostItem=(props)=>{
 	console.log('number is ', props.number)
+	const remove=()=>{
+		props.remove(props.post)
+	}
 	return(
 			<div className='post'>
 				<div className='post__content'>
@@ -13,7 +16,9 @@ const PostItem=(props)=>{
 				</div>
 				<div className='post__btns'>
 				{/* <div className='post'> */}
-					<button>Delete</button>
+					<button
+						onClick={remove}
+					>Delete</button>
 				</div>
 			</div>
 	)
