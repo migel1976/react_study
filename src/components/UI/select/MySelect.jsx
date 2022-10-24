@@ -1,9 +1,7 @@
 import React from 'react'
 
 const MySelect=({options, defaultValue, value, onChange})=>{
-	console.log('options',options)
 	const changeValue=(e)=>{
-		console.log('MySelect onChange is ', e.target.value)
 	 onChange(e.target.value)	
 	}
 	return(

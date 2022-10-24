@@ -1,7 +1,6 @@
 import React from 'react'
 
 const PostItem=(props)=>{
-	console.log('number is ', props.number)
 	const remove=()=>{
 		props.remove(props.post)
 	}
