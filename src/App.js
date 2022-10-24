@@ -13,7 +13,7 @@ export function App(){
 			{id:3, title:'jdj', body:'hfoiew'},
 	])
 	const [selectedSort,setSelectedSort]=useState()
-	const [searchQuery, setSearchQuery]=useState()
+	const [searchQuery, setSearchQuery]=useState('')
 
 	const createPost=(newPost)=>{
 		setPosts([...posts,newPost])
@@ -28,23 +28,33 @@ export function App(){
 		setSelectedSort(sort)
 	}
 
-	const getSortedPosts=()=>{
-		console.log('getSortedPosts')
-		if(selectedSort){
-			return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]))
-		}
-		return posts
-	}
-
-	const sortedPosts=getSortedPosts()
-
-	// const sortedPosts=useMemo(()=>{
+	// непправильное использование сортировки
+	// const getSortedPosts=()=>{
 	// 	console.log('getSortedPosts')
 	// 	if(selectedSort){
 	// 		return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]))
 	// 	}
 	// 	return posts
-	// },[selectedSort,posts])
+	// }
+
+	// const sortedPosts=getSortedPosts()
+
+	const sortedPosts=useMemo(()=>{
+		console.log('sortedPosts')
+		if(selectedSort){
+			return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]))
+		}
+		return posts
+	},[selectedSort,posts])
+
+	const sortedAndSearchedPosts=useMemo(()=>{
+		console.log('sortedAndSearchedPosts')
+		console.log('sortedAndSearchedPosts posts', posts)
+		// return sortedPosts.filter(post=>post.title.toLowerCase().includes(searchQuery.toLowerCase()))
+	  const filtered = sortedPosts.filter(post=>post.title.toLowerCase().includes(searchQuery.toLowerCase()))
+		console.log('sortedAndSearchedPosts filtered posts', filtered)
+		return filtered
+	},[sortedPosts, searchQuery])
 
 	return(
 		<div className='App'>
@@ -67,8 +77,8 @@ export function App(){
 			/>
 
 			{/* Условная отрисовка */}
-			{posts.length > 0
-				? <PostList remove={removePost} posts={sortedPosts} title='Список постов JS на сегодня' />
+			{sortedAndSearchedPosts.length > 0
+				? <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
 				: <h1 style={{textAlign:'center'}}>Посты не найдены!!!</h1>
 					}
 		</div>
