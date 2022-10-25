@@ -1,26 +1,24 @@
-import React,{useState, useRef, useMemo} from 'react'
+import React,{useState, useEffect} from 'react'
 import PostList from './components/PostList'
 import PostForm from './components/PostForm'
 import PostFilter from './components/PostFilter'
 import MyModal from './components/UI/modal/MyModal'
 import MyButton from './components/UI/button/MyButton'
 import {usePosts} from './hooks/usePosts'
-// import MySelect from './components/UI/select/MySelect'
-// import MyInput from './components/UI/input/MyInput'
-
+import PostService from './API/PostService'
 import './style/App.css'
 
 export function App(){
-	const [posts, setPosts]=useState([
-			{id:1, title:'Aloha', body:'Kiter'},
-			{id:2, title:'bee', body:'fdls'},
-			{id:3, title:'jdj', body:'hfoiew'},
-	])
+	const [posts, setPosts]=useState([])
 	const [filter, setFilter]=useState({sort:'', query:''})
 	const [modal, setModal]=useState(false)
 	const sortedAndSearchedPosts=usePosts(posts,filter.sort,filter.query)
-	// const [selectedSort,setSelectedSort]=useState()
-	// const [searchQuery, setSearchQuery]=useState('')
+	const [isPostsLoading, setIsPostsLoading]=useState(false)
+
+	useEffect(()=>{
+		console.log('useEffect in action Mount Component')
+		fetchPosts()
+	},[])
 
 	const createPost=(newPost)=>{
 		setPosts([...posts,newPost])
@@ -31,37 +29,22 @@ export function App(){
 		setPosts(posts.filter(p=>p.id !== post.id))
 	}
 
-	// const sortPosts=(sort)=>{
-	// 	console.log('App sortPosts is ', sort)
-	// 	setSelectedSort(sort)
-	// }
-
-	// непправильное использование сортировки
-	// const getSortedPosts=()=>{
-	// 	console.log('getSortedPosts')
-	// 	if(selectedSort){
-	// 		return [...posts].sort((a,b)=>a[selectedSort].localeCompare(b[selectedSort]))
-	// 	}
-	// 	return posts
-	// }
-
-	// const sortedPosts=getSortedPosts()
-
-	// const sortedPosts=useMemo(()=>{
-	// 	if(filter.sort){
-	// 		return [...posts].sort((a,b)=>a[filter.sort].localeCompare(b[filter.sort]))
-	// 	}
-	// 	return posts
-	// },[filter.sort,posts])
-
-	// const sortedAndSearchedPosts=useMemo(()=>{
-	//   const filtered = sortedPosts.filter(post=>post.title.toLowerCase().includes(filter.query.toLowerCase()))
-	// 	console.log('sortedAndSearchedPosts filtered posts', filtered)
-	// 	return filtered
-	// },[sortedPosts, filter.query])
+	async function fetchPosts(){
+		setIsPostsLoading(true)
+		setTimeout(async()=>{
+			const posts = await PostService.getAll()
+			setPosts(posts)
+			setIsPostsLoading(false)
+		},1000)
+	}
 
 	return(
 		<div className='App'>
+			<button
+				onClick={fetchPosts}
+			>
+				get posts from internet
+			</button>
 			<MyButton
 				style={{marginTop:'30px'}}
 				onClick={()=>setModal(true)}
@@ -80,8 +63,12 @@ export function App(){
 				filter={filter}
 				setFilter={setFilter}
 			/>
+			{isPostsLoading
+				? <h1 style={{textAlign:'center'}}>идет загрузка...</h1>
+				: <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
+			}
 
-			<PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
+
 		</div>
 	)
 }
