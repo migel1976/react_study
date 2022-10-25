@@ -6,6 +6,7 @@ import MyModal from './components/UI/modal/MyModal'
 import MyButton from './components/UI/button/MyButton'
 import {usePosts} from './hooks/usePosts'
 import PostService from './API/PostService'
+import MyLoader from './components/UI/loader/MyLoader'
 import './style/App.css'
 
 export function App(){
@@ -64,8 +65,11 @@ export function App(){
 				setFilter={setFilter}
 			/>
 			{isPostsLoading
-				? <h1 style={{textAlign:'center'}}>идет загрузка...</h1>
-				: <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
+				// ? <h1 style={{textAlign:'center'}}>идет загрузка...</h1>
+					? <div style={{display:'flex', justifyContent:'center'}}>
+							<MyLoader />
+						</div>
+					: <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
 			}
 
 
