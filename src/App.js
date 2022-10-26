@@ -8,23 +8,32 @@ import {usePosts} from './hooks/usePosts'
 import PostService from './API/PostService'
 import MyLoader from './components/UI/loader/MyLoader'
 import {useFetching} from './hooks/useFetching'
+import {getPageCount, getPagesArray} from './utils/pages'
 import './style/App.css'
 
 export function App(){
 	const [posts, setPosts]=useState([])
 	const [filter, setFilter]=useState({sort:'', query:''})
 	const [modal, setModal]=useState(false)
+	const [totalPages, setTotalPages]=useState(0)
+	const [limit, setLimit]=useState(5)
+	const [page, setPage]=useState(1)
 	const sortedAndSearchedPosts=usePosts(posts,filter.sort,filter.query)
-	// const [isPostsLoading, setIsPostsLoading]=useState(false)
+
+	let pagesArray=getPagesArray(totalPages)
+
 	const [fetchPosts, isPostsLoading, postError]=useFetching(async ()=>{
-			const posts = await PostService.getAll()
-			setPosts(posts)
+			const response = await PostService.getAll(limit, page)
+			setPosts(response.data)
+			const totalCount=response.headers['x-total-count']
+			console.log('totalCount ', totalCount)
+			setTotalPages(getPageCount(totalCount, limit))
 	})
 
 	useEffect(()=>{
 		console.log('useEffect in action Mount Component')
 		fetchPosts()
-	},[])
+	},[page])
 
 	const createPost=(newPost)=>{
 		setPosts([...posts,newPost])
@@ -35,14 +44,10 @@ export function App(){
 		setPosts(posts.filter(p=>p.id !== post.id))
 	}
 
-	// async function fetchPosts(){
-	// 	setIsPostsLoading(true)
-	// 	setTimeout(async()=>{
-	// 		const posts = await PostService.getAll()
-	// 		setPosts(posts)
-	// 		setIsPostsLoading(false)
-	// 	},1000)
-	// }
+	console.log('totalPages',totalPages)
+	const changePage=(page)=>{
+		setPage(page)
+	}
 
 	return(
 		<div className='App'>
@@ -77,6 +82,15 @@ export function App(){
 						</div>
 					: <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
 			}
+			<div className='page__wrapper'>
+				{pagesArray.map(p=>
+						<span key={p}
+									className={page===p ? 'page page__current' : 'page'}
+									onClick={()=>changePage(p)}
+					>{p}</span>
+					)
+				}
+			</div>
 		</div>
 	)
 }
