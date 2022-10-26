@@ -7,6 +7,7 @@ import MyButton from './components/UI/button/MyButton'
 import {usePosts} from './hooks/usePosts'
 import PostService from './API/PostService'
 import MyLoader from './components/UI/loader/MyLoader'
+import {useFetching} from './hooks/useFetching'
 import './style/App.css'
 
 export function App(){
@@ -14,7 +15,11 @@ export function App(){
 	const [filter, setFilter]=useState({sort:'', query:''})
 	const [modal, setModal]=useState(false)
 	const sortedAndSearchedPosts=usePosts(posts,filter.sort,filter.query)
-	const [isPostsLoading, setIsPostsLoading]=useState(false)
+	// const [isPostsLoading, setIsPostsLoading]=useState(false)
+	const [fetchPosts, isPostsLoading, postError]=useFetching(async ()=>{
+			const posts = await PostService.getAll()
+			setPosts(posts)
+	})
 
 	useEffect(()=>{
 		console.log('useEffect in action Mount Component')
@@ -30,14 +35,14 @@ export function App(){
 		setPosts(posts.filter(p=>p.id !== post.id))
 	}
 
-	async function fetchPosts(){
-		setIsPostsLoading(true)
-		setTimeout(async()=>{
-			const posts = await PostService.getAll()
-			setPosts(posts)
-			setIsPostsLoading(false)
-		},1000)
-	}
+	// async function fetchPosts(){
+	// 	setIsPostsLoading(true)
+	// 	setTimeout(async()=>{
+	// 		const posts = await PostService.getAll()
+	// 		setPosts(posts)
+	// 		setIsPostsLoading(false)
+	// 	},1000)
+	// }
 
 	return(
 		<div className='App'>
@@ -64,6 +69,7 @@ export function App(){
 				filter={filter}
 				setFilter={setFilter}
 			/>
+			{postError && <h1>Произошла ошибка " {postError} "</h1>}
 			{isPostsLoading
 				// ? <h1 style={{textAlign:'center'}}>идет загрузка...</h1>
 					? <div style={{display:'flex', justifyContent:'center'}}>
@@ -71,8 +77,6 @@ export function App(){
 						</div>
 					: <PostList remove={removePost} posts={sortedAndSearchedPosts} title='Список постов JS на сегодня' />
 			}
-
-
 		</div>
 	)
 }
