@@ -7,15 +7,15 @@ export function App(){
 	return(
 		<BrowserRouter>
 			<Routes>
-				<div className='navbar'>
-					<div className='navbar__links'>
-						<a href='/about'>About</a>
-						<a href='/posts'>Posts</a>
-					</div>
-				</div>
+				{/* <div className='navbar'> */}
+				{/* 	<div className='navbar__links'> */}
+				{/* 		<a href='/about'>About</a> */}
+				{/* 		<a href='/posts'>Posts</a> */}
+				{/* 	</div> */}
+				{/* </div> */}
 				<Route path='/about' element={<About />} />
 				<Route path='/posts' element={<Posts />} />
 			</Routes>
-		</BrowserRouter>)
+		</BrowserRouter>
+	)
 }
-
