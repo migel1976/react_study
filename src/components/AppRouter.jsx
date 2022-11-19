@@ -1,12 +1,13 @@
-import React from 'react'
+import React,{useContext}  from 'react'
 import Posts from '../pages/Posts'
 import Login from '../pages/Login'
 import {Route, Routes} from 'react-router-dom'
 import {publicRoutes, privateRoutes} from '../router/index'
+import {AuthContext} from '../context/index'
  
 
 const AppRouter =()=>{
-	const isAuth=false
+	const {isAuth}=useContext(AuthContext)
 	return(
 			isAuth
 			?
@@ -16,6 +17,7 @@ const AppRouter =()=>{
 							element={route.component}
 							path={route.path}
 							exact={route.exact}
+							key={route.path}
 						/>
 					)}
 					<Route path='*' element={<Posts />} />
@@ -27,6 +29,7 @@ const AppRouter =()=>{
 							element={route.component}
 							path={route.path}
 							exact={route.exact}
+							key={route.path}
 						/>
 					)}
 					<Route path='*' element={<Login />} />
